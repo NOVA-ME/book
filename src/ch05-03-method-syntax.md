@@ -17,26 +17,7 @@ in Listing 5-13.
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust
-#[derive(Debug)]
-struct Rectangle {
-    width: u32,
-    height: u32,
-}
-
-impl Rectangle {
-    fn area(&self) -> u32 {
-        self.width * self.height
-    }
-}
-
-fn main() {
-    let rect1 = Rectangle { width: 30, height: 50 };
-
-    println!(
-        "The area of the rectangle is {} square pixels.",
-        rect1.area()
-    );
-}
+{{#include ../examples/ch05-using-structs-to-structure-related-data/listing-05-13/src/main.rs}}
 ```
 
 <span class="caption">Listing 5-13: Defining an `area` method on the
@@ -91,24 +72,7 @@ provide.
 > the method. In other words, the following are the same:
 >
 > ```rust
-> # #[derive(Debug,Copy,Clone)]
-> # struct Point {
-> #     x: f64,
-> #     y: f64,
-> # }
-> #
-> # impl Point {
-> #    fn distance(&self, other: &Point) -> f64 {
-> #        let x_squared = f64::powi(other.x - self.x, 2);
-> #        let y_squared = f64::powi(other.y - self.y, 2);
-> #
-> #        f64::sqrt(x_squared + y_squared)
-> #    }
-> # }
-> # let p1 = Point { x: 0.0, y: 0.0 };
-> # let p2 = Point { x: 5.0, y: 6.5 };
-> p1.distance(&p2);
-> (&p1).distance(&p2);
+> {{#include ../examples/ch05-using-structs-to-structure-related-data/no-listing-03-wheres-the-arrow-operator/src/main.rs:19:20}}
 > ```
 >
 > The first one looks much cleaner. This automatic referencing behavior works
@@ -130,14 +94,7 @@ method.
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust,ignore
-fn main() {
-    let rect1 = Rectangle { width: 30, height: 50 };
-    let rect2 = Rectangle { width: 10, height: 40 };
-    let rect3 = Rectangle { width: 60, height: 45 };
-
-    println!("Can rect1 hold rect2? {}", rect1.can_hold(&rect2));
-    println!("Can rect1 hold rect3? {}", rect1.can_hold(&rect3));
-}
+{{#include ../examples/ch05-using-structs-to-structure-related-data/listing-05-14/src/main.rs}}
 ```
 
 <span class="caption">Listing 5-14: Using the as-yet-unwritten `can_hold`
@@ -169,21 +126,7 @@ Listing 5-13, shown in Listing 5-15.
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust
-# #[derive(Debug)]
-# struct Rectangle {
-#     width: u32,
-#     height: u32,
-# }
-#
-impl Rectangle {
-    fn area(&self) -> u32 {
-        self.width * self.height
-    }
-
-    fn can_hold(&self, other: &Rectangle) -> bool {
-        self.width > other.width && self.height > other.height
-    }
-}
+{{#include ../examples/ch05-using-structs-to-structure-related-data/listing-05-15/src/main.rs:7:15}}
 ```
 
 <span class="caption">Listing 5-15: Implementing the `can_hold` method on
@@ -212,17 +155,7 @@ specify the same value twice:
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust
-# #[derive(Debug)]
-# struct Rectangle {
-#     width: u32,
-#     height: u32,
-# }
-#
-impl Rectangle {
-    fn square(size: u32) -> Rectangle {
-        Rectangle { width: size, height: size }
-    }
-}
+{{#include ../examples/ch05-using-structs-to-structure-related-data/no-listing-04-associated-functions/src/main.rs:7:11}}
 ```
 
 To call this associated function, we use the `::` syntax with the struct name;
@@ -237,23 +170,7 @@ Each struct is allowed to have multiple `impl` blocks. For example, Listing
 in its own `impl` block.
 
 ```rust
-# #[derive(Debug)]
-# struct Rectangle {
-#     width: u32,
-#     height: u32,
-# }
-#
-impl Rectangle {
-    fn area(&self) -> u32 {
-        self.width * self.height
-    }
-}
-
-impl Rectangle {
-    fn can_hold(&self, other: &Rectangle) -> bool {
-        self.width > other.width && self.height > other.height
-    }
-}
+{{#include ../examples/ch05-using-structs-to-structure-related-data/listing-05-15/src/main.rs:7:17}}
 ```
 
 <span class="caption">Listing 5-16: Rewriting Listing 5-15 using multiple `impl`

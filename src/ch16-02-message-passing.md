@@ -36,12 +36,8 @@ want to send over the channel.
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust
-use std::sync::mpsc;
-
-fn main() {
-    let (tx, rx) = mpsc::channel();
-#     tx.send(()).unwrap();
-}
+{{#include ../examples/ch16-fearless-concurrency/listing-16-06/src/main.rs:1:4}}
+{{#include ../examples/ch16-fearless-concurrency/listing-16-06/src/main.rs:1:6}}
 ```
 
 <span class="caption">Listing 16-6: Creating a channel and assigning the two
@@ -75,17 +71,7 @@ sending a chat message from one thread to another.
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust
-use std::thread;
-use std::sync::mpsc;
-
-fn main() {
-    let (tx, rx) = mpsc::channel();
-
-    thread::spawn(move || {
-        let val = String::from("hi");
-        tx.send(val).unwrap();
-    });
-}
+{{#include ../examples/ch16-fearless-concurrency/listing-16-07/src/main.rs}}
 ```
 
 <span class="caption">Listing 16-7: Moving `tx` to a spawned thread and sending
@@ -110,20 +96,7 @@ end of the river or like getting a chat message.
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust
-use std::thread;
-use std::sync::mpsc;
-
-fn main() {
-    let (tx, rx) = mpsc::channel();
-
-    thread::spawn(move || {
-        let val = String::from("hi");
-        tx.send(val).unwrap();
-    });
-
-    let received = rx.recv().unwrap();
-    println!("Got: {}", received);
-}
+{{#include ../examples/ch16-fearless-concurrency/listing-16-08/src/main.rs}}
 ```
 
 <span class="caption">Listing 16-8: Receiving the value “hi” in the main thread
@@ -170,21 +143,7 @@ this code isn’t allowed:
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust,ignore,does_not_compile
-use std::thread;
-use std::sync::mpsc;
-
-fn main() {
-    let (tx, rx) = mpsc::channel();
-
-    thread::spawn(move || {
-        let val = String::from("hi");
-        tx.send(val).unwrap();
-        println!("val is {}", val);
-    });
-
-    let received = rx.recv().unwrap();
-    println!("Got: {}", received);
-}
+{{#include ../examples/ch16-fearless-concurrency/listing-16-09/src/main.rs}}
 ```
 
 <span class="caption">Listing 16-9: Attempting to use `val` after we’ve sent it
@@ -226,31 +185,7 @@ pause for a second between each message.
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust
-use std::thread;
-use std::sync::mpsc;
-use std::time::Duration;
-
-fn main() {
-    let (tx, rx) = mpsc::channel();
-
-    thread::spawn(move || {
-        let vals = vec![
-            String::from("hi"),
-            String::from("from"),
-            String::from("the"),
-            String::from("thread"),
-        ];
-
-        for val in vals {
-            tx.send(val).unwrap();
-            thread::sleep(Duration::from_secs(1));
-        }
-    });
-
-    for received in rx {
-        println!("Got: {}", received);
-    }
-}
+{{#include ../examples/ch16-fearless-concurrency/listing-16-10/src/main.rs}}
 ```
 
 <span class="caption">Listing 16-10: Sending multiple messages and pausing
@@ -289,50 +224,12 @@ so by cloning the transmitting half of the channel, as shown in Listing 16-11:
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust
-# use std::thread;
-# use std::sync::mpsc;
-# use std::time::Duration;
-#
-# fn main() {
-// --snip--
+    // --snip--
 
-let (tx, rx) = mpsc::channel();
+{{#include ../examples/ch16-fearless-concurrency/listing-16-11/src/main.rs:6:39}}
 
-let tx1 = mpsc::Sender::clone(&tx);
-thread::spawn(move || {
-    let vals = vec![
-        String::from("hi"),
-        String::from("from"),
-        String::from("the"),
-        String::from("thread"),
-    ];
 
-    for val in vals {
-        tx1.send(val).unwrap();
-        thread::sleep(Duration::from_secs(1));
-    }
-});
-
-thread::spawn(move || {
-    let vals = vec![
-        String::from("more"),
-        String::from("messages"),
-        String::from("for"),
-        String::from("you"),
-    ];
-
-    for val in vals {
-        tx.send(val).unwrap();
-        thread::sleep(Duration::from_secs(1));
-    }
-});
-
-for received in rx {
-    println!("Got: {}", received);
-}
-
-// --snip--
-# }
+    // --snip--
 ```
 
 <span class="caption">Listing 16-11: Sending multiple messages from multiple

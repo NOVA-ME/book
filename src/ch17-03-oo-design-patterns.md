@@ -35,20 +35,7 @@ because we haven’t implemented the `blog` crate yet.
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust,ignore
-use blog::Post;
-
-fn main() {
-    let mut post = Post::new();
-
-    post.add_text("I ate a salad for lunch today");
-    assert_eq!("", post.content());
-
-    post.request_review();
-    assert_eq!("", post.content());
-
-    post.approve();
-    assert_eq!("I ate a salad for lunch today", post.content());
-}
+{{#include ../examples/ch17-oop/listing-17-11/src/main.rs}}
 ```
 
 <span class="caption">Listing 17-11: Code that demonstrates the desired
@@ -89,25 +76,7 @@ inside an `Option<T>` in a private field named `state`. You’ll see why the
 <span class="filename">Filename: src/lib.rs</span>
 
 ```rust
-pub struct Post {
-    state: Option<Box<dyn State>>,
-    content: String,
-}
-
-impl Post {
-    pub fn new() -> Post {
-        Post {
-            state: Some(Box::new(Draft {})),
-            content: String::new(),
-        }
-    }
-}
-
-trait State {}
-
-struct Draft {}
-
-impl State for Draft {}
+{{#include ../examples/ch17-oop/listing-17-12/src/lib.rs}}
 ```
 
 <span class="caption">Listing 17-12: Definition of a `Post` struct and a `new`
@@ -139,16 +108,9 @@ Post` block:
 <span class="filename">Filename: src/lib.rs</span>
 
 ```rust
-# pub struct Post {
-#     content: String,
-# }
-#
-impl Post {
+{{#include ../examples/ch17-oop/listing-17-13/src/lib.rs:6}}
     // --snip--
-    pub fn add_text(&mut self, text: &str) {
-        self.content.push_str(text);
-    }
-}
+{{#include ../examples/ch17-oop/listing-17-13/src/lib.rs:14:17}}
 ```
 
 <span class="caption">Listing 17-13: Implementing the `add_text` method to add
@@ -176,16 +138,9 @@ be empty. Listing 17-14 shows this placeholder implementation:
 <span class="filename">Filename: src/lib.rs</span>
 
 ```rust
-# pub struct Post {
-#     content: String,
-# }
-#
-impl Post {
+{{#include ../examples/ch17-oop/listing-17-14/src/lib.rs:6}}
     // --snip--
-    pub fn content(&self) -> &str {
-        ""
-    }
-}
+{{#include ../examples/ch17-oop/listing-17-14/src/lib.rs:18:21}}
 ```
 
 <span class="caption">Listing 17-14: Adding a placeholder implementation for
@@ -202,39 +157,9 @@ change its state from `Draft` to `PendingReview`. Listing 17-15 shows this code:
 <span class="filename">Filename: src/lib.rs</span>
 
 ```rust
-# pub struct Post {
-#     state: Option<Box<dyn State>>,
-#     content: String,
-# }
-#
-impl Post {
+{{#include ../examples/ch17-oop/listing-17-15/src/lib.rs:6}}
     // --snip--
-    pub fn request_review(&mut self) {
-        if let Some(s) = self.state.take() {
-            self.state = Some(s.request_review())
-        }
-    }
-}
-
-trait State {
-    fn request_review(self: Box<Self>) -> Box<dyn State>;
-}
-
-struct Draft {}
-
-impl State for Draft {
-    fn request_review(self: Box<Self>) -> Box<dyn State> {
-        Box::new(PendingReview {})
-    }
-}
-
-struct PendingReview {}
-
-impl State for PendingReview {
-    fn request_review(self: Box<Self>) -> Box<dyn State> {
-        self
-    }
-}
+{{#include ../examples/ch17-oop/listing-17-15/src/lib.rs:22:47}}
 ```
 
 <span class="caption">Listing 17-15: Implementing `request_review` methods on
@@ -291,62 +216,13 @@ state is approved, as shown in Listing 17-16:
 <span class="filename">Filename: src/lib.rs</span>
 
 ```rust
-# pub struct Post {
-#     state: Option<Box<dyn State>>,
-#     content: String,
-# }
-#
-impl Post {
+{{#include ../examples/ch17-oop/listing-17-16/src/lib.rs:6}}
     // --snip--
-    pub fn approve(&mut self) {
-        if let Some(s) = self.state.take() {
-            self.state = Some(s.approve())
-        }
-    }
-}
-
-trait State {
-    fn request_review(self: Box<Self>) -> Box<dyn State>;
-    fn approve(self: Box<Self>) -> Box<dyn State>;
-}
-
-struct Draft {}
-
-impl State for Draft {
-#     fn request_review(self: Box<Self>) -> Box<dyn State> {
-#         Box::new(PendingReview {})
-#     }
-#
+{{#include ../examples/ch17-oop/listing-17-16/src/lib.rs:28:42}}
     // --snip--
-    fn approve(self: Box<Self>) -> Box<dyn State> {
-        self
-    }
-}
-
-struct PendingReview {}
-
-impl State for PendingReview {
-#     fn request_review(self: Box<Self>) -> Box<dyn State> {
-#         self
-#     }
-#
+{{#include ../examples/ch17-oop/listing-17-16/src/lib.rs:47:54}}
     // --snip--
-    fn approve(self: Box<Self>) -> Box<dyn State> {
-        Box::new(Published {})
-    }
-}
-
-struct Published {}
-
-impl State for Published {
-    fn request_review(self: Box<Self>) -> Box<dyn State> {
-        self
-    }
-
-    fn approve(self: Box<Self>) -> Box<dyn State> {
-        self
-    }
-}
+{{#include ../examples/ch17-oop/listing-17-16/src/lib.rs:59:74}}
 ```
 
 <span class="caption">Listing 17-16: Implementing the `approve` method on
@@ -369,21 +245,11 @@ otherwise, we want to return an empty string slice, as shown in Listing 17-17:
 <span class="filename">Filename: src/lib.rs</span>
 
 ```rust
-# trait State {
-#     fn content<'a>(&self, post: &'a Post) -> &'a str;
-# }
-# pub struct Post {
-#     state: Option<Box<dyn State>>,
-#     content: String,
-# }
-#
-impl Post {
+{{#include ../examples/ch17-oop/listing-17-17/src/lib.rs:6}}
     // --snip--
-    pub fn content(&self) -> &str {
-        self.state.as_ref().unwrap().content(&self)
-    }
+{{#include ../examples/ch17-oop/listing-17-17/src/lib.rs:18:20}}
     // --snip--
-}
+{{#include ../examples/ch17-oop/listing-17-17/src/lib.rs:33}}
 ```
 
 <span class="caption">Listing 17-17: Updating the `content` method on `Post` to
@@ -418,25 +284,14 @@ Listing 17-18:
 <span class="filename">Filename: src/lib.rs</span>
 
 ```rust
-# pub struct Post {
-#     content: String
-# }
-trait State {
+{{#include ../examples/ch17-oop/listing-17-18/src/lib.rs:35}}
     // --snip--
-    fn content<'a>(&self, post: &'a Post) -> &'a str {
-        ""
-    }
-}
+{{#include ../examples/ch17-oop/listing-17-18/src/lib.rs:39:42}}
 
 // --snip--
-struct Published {}
-
-impl State for Published {
+{{#include ../examples/ch17-oop/listing-17-18/src/lib.rs:68:70}}
     // --snip--
-    fn content<'a>(&self, post: &'a Post) -> &'a str {
-        &post.content
-    }
-}
+{{#include ../examples/ch17-oop/listing-17-18/src/lib.rs:79:82}}
 ```
 
 <span class="caption">Listing 17-18: Adding the `content` method to the `State`
@@ -528,14 +383,8 @@ Let’s consider the first part of `main` in Listing 17-11:
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust,ignore
-# use blog::Post;
-
-fn main() {
-    let mut post = Post::new();
-
-    post.add_text("I ate a salad for lunch today");
-    assert_eq!("", post.content());
-}
+{{#include ../examples/ch17-oop/listing-17-11/src/main.rs:3:7}}
+{{#include ../examples/ch17-oop/listing-17-11/src/main.rs:14}}
 ```
 
 We still enable the creation of new posts in the draft state using `Post::new`
@@ -551,31 +400,7 @@ as well as methods on each:
 <span class="filename">Filename: src/lib.rs</span>
 
 ```rust
-pub struct Post {
-    content: String,
-}
-
-pub struct DraftPost {
-    content: String,
-}
-
-impl Post {
-    pub fn new() -> DraftPost {
-        DraftPost {
-            content: String::new(),
-        }
-    }
-
-    pub fn content(&self) -> &str {
-        &self.content
-    }
-}
-
-impl DraftPost {
-    pub fn add_text(&mut self, text: &str) {
-        self.content.push_str(text);
-    }
-}
+{{#include ../examples/ch17-oop/listing-17-19/src/lib.rs}}
 ```
 
 <span class="caption">Listing 17-19: A `Post` with a `content` method and a
@@ -611,35 +436,9 @@ shown in Listing 17-20:
 <span class="filename">Filename: src/lib.rs</span>
 
 ```rust
-# pub struct Post {
-#     content: String,
-# }
-#
-# pub struct DraftPost {
-#     content: String,
-# }
-#
-impl DraftPost {
+{{#include ../examples/ch17-oop/listing-17-20/src/lib.rs:21}}
     // --snip--
-
-    pub fn request_review(self) -> PendingReviewPost {
-        PendingReviewPost {
-            content: self.content,
-        }
-    }
-}
-
-pub struct PendingReviewPost {
-    content: String,
-}
-
-impl PendingReviewPost {
-    pub fn approve(self) -> Post {
-        Post {
-            content: self.content,
-        }
-    }
-}
+{{#include ../examples/ch17-oop/listing-17-20/src/lib.rs:26:43}}
 ```
 
 <span class="caption">Listing 17-20: A `PendingReviewPost` that gets created by
@@ -669,19 +468,7 @@ The updated code in `main` is shown in Listing 17-21:
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust,ignore
-use blog::Post;
-
-fn main() {
-    let mut post = Post::new();
-
-    post.add_text("I ate a salad for lunch today");
-
-    let post = post.request_review();
-
-    let post = post.approve();
-
-    assert_eq!("I ate a salad for lunch today", post.content());
-}
+{{#include ../examples/ch17-oop/listing-17-21/src/main.rs}}
 ```
 
 <span class="caption">Listing 17-21: Modifications to `main` to use the new

@@ -47,14 +47,7 @@ Listing 11-1.
 <span class="filename">Filename: src/lib.rs</span>
 
 ```rust
-# fn main() {}
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-}
+{{#include ../examples/ch11-writing-automated-tests/listing-11-01/src/lib.rs}}
 ```
 
 <span class="caption">Listing 11-1: The test module and function generated
@@ -130,13 +123,7 @@ so:
 
 ```rust
 # fn main() {}
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn exploration() {
-        assert_eq!(2 + 2, 4);
-    }
-}
+{{#include ../examples/ch11-writing-automated-tests/no-listing-01-changing-test-name/src/lib.rs}}
 ```
 
 Then run `cargo test` again. The output now shows `exploration` instead of
@@ -160,18 +147,7 @@ which is to call the `panic!` macro. Enter the new test, `another`, so your
 
 ```rust,panics
 # fn main() {}
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn exploration() {
-        assert_eq!(2 + 2, 4);
-    }
-
-    #[test]
-    fn another() {
-        panic!("Make this test fail");
-    }
-}
+{{#include ../examples/ch11-writing-automated-tests/listing-11-03/src/lib.rs}}
 ```
 
 <span class="caption">Listing 11-3: Adding a second test that will fail because
@@ -237,17 +213,7 @@ method, which are repeated here in Listing 11-5. Let’s put this code in the
 
 ```rust
 # fn main() {}
-#[derive(Debug)]
-struct Rectangle {
-    width: u32,
-    height: u32,
-}
-
-impl Rectangle {
-    fn can_hold(&self, other: &Rectangle) -> bool {
-        self.width > other.width && self.height > other.height
-    }
-}
+{{#include ../examples/ch11-writing-automated-tests/listing-11-05/src/lib.rs}}
 ```
 
 <span class="caption">Listing 11-5: Using the `Rectangle` struct and its
@@ -263,18 +229,7 @@ has a width of 5 and a height of 1.
 
 ```rust
 # fn main() {}
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn larger_can_hold_smaller() {
-        let larger = Rectangle { width: 8, height: 7 };
-        let smaller = Rectangle { width: 5, height: 1 };
-
-        assert!(larger.can_hold(&smaller));
-    }
-}
+{{#include ../examples/ch11-writing-automated-tests/listing-11-06/src/lib.rs:13:24}}
 ```
 
 <span class="caption">Listing 11-6: A test for `can_hold` that checks whether a
@@ -307,23 +262,9 @@ rectangle cannot hold a larger rectangle:
 
 ```rust
 # fn main() {}
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn larger_can_hold_smaller() {
+{{#include ../examples/ch11-writing-automated-tests/no-listing-02-adding-another-rectangle-test/src/lib.rs:13:18}}
         // --snip--
-    }
-
-    #[test]
-    fn smaller_cannot_hold_larger() {
-        let larger = Rectangle { width: 8, height: 7 };
-        let smaller = Rectangle { width: 5, height: 1 };
-
-        assert!(!smaller.can_hold(&larger));
-    }
-}
+{{#include ../examples/ch11-writing-automated-tests/no-listing-02-adding-another-rectangle-test/src/lib.rs:23:32}}
 ```
 
 Because the correct result of the `can_hold` function in this case is `false`,
@@ -345,18 +286,8 @@ compares the widths:
 
 ```rust,not_desired_behavior
 # fn main() {}
-# #[derive(Debug)]
-# struct Rectangle {
-#     width: u32,
-#     height: u32,
-# }
 // --snip--
-
-impl Rectangle {
-    fn can_hold(&self, other: &Rectangle) -> bool {
-        self.width < other.width && self.height > other.height
-    }
-}
+{{#include ../examples/ch11-writing-automated-tests/no-listing-03-introducing-a-bug/src/lib.rs:7:11}}
 ```
 
 Running the tests now produces the following:
@@ -404,19 +335,7 @@ parameter and returns the result. Then we test this function using the
 
 ```rust
 # fn main() {}
-pub fn add_two(a: i32) -> i32 {
-    a + 2
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_adds_two() {
-        assert_eq!(4, add_two(2));
-    }
-}
+{{#include ../examples/ch11-writing-automated-tests/listing-11-07/src/lib.rs}}
 ```
 
 <span class="caption">Listing 11-7: Testing the function `add_two` using the
@@ -441,9 +360,7 @@ instead add `3`:
 
 ```rust,not_desired_behavior
 # fn main() {}
-pub fn add_two(a: i32) -> i32 {
-    a + 3
-}
+{{#include ../examples/ch11-writing-automated-tests/no-listing-04-bug-in-add-two/src/lib.rs:1:3}}
 ```
 
 Run the tests again:
@@ -523,20 +440,7 @@ want to test that the name we pass into the function appears in the output:
 
 ```rust
 # fn main() {}
-pub fn greeting(name: &str) -> String {
-    format!("Hello {}!", name)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn greeting_contains_name() {
-        let result = greeting("Carol");
-        assert!(result.contains("Carol"));
-    }
-}
+{{#include ../examples/ch11-writing-automated-tests/no-listing-05-greeter/src/lib.rs}}
 ```
 
 The requirements for this program haven’t been agreed upon yet, and we’re
@@ -551,9 +455,7 @@ Let’s introduce a bug into this code by changing `greeting` to not include
 
 ```rust,not_desired_behavior
 # fn main() {}
-pub fn greeting(name: &str) -> String {
-    String::from("Hello!")
-}
+{{#include ../examples/ch11-writing-automated-tests/no-listing-06-greeter-with-bug/src/lib.rs:1:3}}
 ```
 
 Running this test produces the following:
@@ -580,14 +482,7 @@ giving it a custom failure message made from a format string with a placeholder
 filled in with the actual value we got from the `greeting` function:
 
 ```rust,ignore
-#[test]
-fn greeting_contains_name() {
-    let result = greeting("Carol");
-    assert!(
-        result.contains("Carol"),
-        "Greeting did not contain name, value was `{}`", result
-    );
-}
+{{#include ../examples/ch11-writing-automated-tests/no-listing-07-custom-failure-message/src/lib.rs:9:16}}
 ```
 
 Now when we run the test, we’ll get a more informative error message:
@@ -623,32 +518,7 @@ happen when we expect them to.
 
 ```rust
 # fn main() {}
-pub struct Guess {
-    value: i32,
-}
-
-impl Guess {
-    pub fn new(value: i32) -> Guess {
-        if value < 1 || value > 100 {
-            panic!("Guess value must be between 1 and 100, got {}.", value);
-        }
-
-        Guess {
-            value
-        }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    #[should_panic]
-    fn greater_than_100() {
-        Guess::new(200);
-    }
-}
+{{#include ../examples/ch11-writing-automated-tests/listing-11-08/src/lib.rs}}
 ```
 
 <span class="caption">Listing 11-8: Testing that a condition will cause a
@@ -670,23 +540,8 @@ that the `new` function will panic if the value is greater than 100:
 
 ```rust,not_desired_behavior
 # fn main() {}
-# pub struct Guess {
-#     value: i32,
-# }
-#
 // --snip--
-
-impl Guess {
-    pub fn new(value: i32) -> Guess {
-        if value < 1  {
-            panic!("Guess value must be between 1 and 100, got {}.", value);
-        }
-
-        Guess {
-            value
-        }
-    }
-}
+{{#include ../examples/ch11-writing-automated-tests/no-listing-08-guess-with-bug/src/lib.rs:5:15}}
 ```
 
 When we run the test in Listing 11-8, it will fail:
@@ -720,38 +575,8 @@ different messages depending on whether the value is too small or too large.
 
 ```rust
 # fn main() {}
-# pub struct Guess {
-#     value: i32,
-# }
-#
 // --snip--
-
-impl Guess {
-    pub fn new(value: i32) -> Guess {
-        if value < 1 {
-            panic!("Guess value must be greater than or equal to 1, got {}.",
-                   value);
-        } else if value > 100 {
-            panic!("Guess value must be less than or equal to 100, got {}.",
-                   value);
-        }
-
-        Guess {
-            value
-        }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    #[should_panic(expected = "Guess value must be less than or equal to 100")]
-    fn greater_than_100() {
-        Guess::new(200);
-    }
-}
+{{#include ../examples/ch11-writing-automated-tests/listing-11-09/src/lib.rs:5:30}}
 ```
 
 <span class="caption">Listing 11-9: Testing that a condition will cause a
@@ -772,11 +597,7 @@ fails, let’s again introduce a bug into our code by swapping the bodies of the
 `if value < 1` and the `else if value > 100` blocks:
 
 ```rust,ignore,not_desired_behavior
-if value < 1 {
-    panic!("Guess value must be less than or equal to 100, got {}.", value);
-} else if value > 100 {
-    panic!("Guess value must be greater than or equal to 1, got {}.", value);
-}
+{{#include ../examples/ch11-writing-automated-tests/no-listing-09-guess-with-panic-msg-bug/src/lib.rs:7:13}}
 ```
 
 This time when we run the `should_panic` test, it will fail:
@@ -813,17 +634,7 @@ that use `Result<T, E>`! Here’s the test from Listing 11-1, rewritten to use
 `Result<T, E>` and return an `Err` instead of panicking:
 
 ```rust
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() -> Result<(), String> {
-        if 2 + 2 == 4 {
-            Ok(())
-        } else {
-            Err(String::from("two plus two does not equal four"))
-        }
-    }
-}
+{{#include ../examples/ch11-writing-automated-tests/no-listing-10-result-in-tests/src/lib.rs}}
 ```
 
 The `it_works` function now has a return type, `Result<(), String>`. In the

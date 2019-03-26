@@ -29,19 +29,7 @@ for an `add_one` function in a crate named `my_crate`:
 <span class="filename">Filename: src/lib.rs</span>
 
 ```rust,ignore
-/// Adds one to the number given.
-///
-/// # Examples
-///
-/// ```
-/// let arg = 5;
-/// let answer = my_crate::add_one(arg);
-///
-/// assert_eq!(6, answer);
-/// ```
-pub fn add_one(x: i32) -> i32 {
-    x + 1
-}
+{{#include ../examples/ch14-more-about-cargo/listing-14-01/src/lib.rs}}
 ```
 
 <span class="caption">Listing 14-1: A documentation comment for a
@@ -125,12 +113,7 @@ shown in Listing 14-2:
 <span class="filename">Filename: src/lib.rs</span>
 
 ```rust,ignore
-//! # My Crate
-//!
-//! `my_crate` is a collection of utilities to make performing certain
-//! calculations more convenient.
-
-/// Adds one to the number given.
+{{#include ../examples/ch14-more-about-cargo/listing-14-02/src/lib.rs:1:6}}
 // --snip--
 ```
 
@@ -189,36 +172,9 @@ function named `mix`, as shown in Listing 14-3:
 <span class="filename">Filename: src/lib.rs</span>
 
 ```rust
-//! # Art
-//!
-//! A library for modeling artistic concepts.
-
-pub mod kinds {
-    /// The primary colors according to the RYB color model.
-    pub enum PrimaryColor {
-        Red,
-        Yellow,
-        Blue,
-    }
-
-    /// The secondary colors according to the RYB color model.
-    pub enum SecondaryColor {
-        Orange,
-        Green,
-        Purple,
-    }
-}
-
-pub mod utils {
-    use crate::kinds::*;
-
-    /// Combines two primary colors in equal amounts to create
-    /// a secondary color.
-    pub fn mix(c1: PrimaryColor, c2: PrimaryColor) -> SecondaryColor {
+{{#include ../examples/ch14-more-about-cargo/listing-14-03/src/lib.rs:1:26}}
         // --snip--
-#         SecondaryColor::Orange
-    }
-}
+{{#include ../examples/ch14-more-about-cargo/listing-14-03/src/lib.rs:28:29}}
 # fn main() {}
 ```
 
@@ -245,14 +201,7 @@ currently defined. Listing 14-4 shows an example of a crate that uses the
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust,ignore
-use art::kinds::PrimaryColor;
-use art::utils::mix;
-
-fn main() {
-    let red = PrimaryColor::Red;
-    let yellow = PrimaryColor::Yellow;
-    mix(red, yellow);
-}
+{{#include ../examples/ch14-more-about-cargo/listing-14-04/src/main.rs}}
 ```
 
 <span class="caption">Listing 14-4: A crate using the `art` crate’s items with
@@ -276,21 +225,11 @@ items at the top level, as shown in Listing 14-5:
 <span class="filename">Filename: src/lib.rs</span>
 
 ```rust,ignore
-//! # Art
-//!
-//! A library for modeling artistic concepts.
-
-pub use self::kinds::PrimaryColor;
-pub use self::kinds::SecondaryColor;
-pub use self::utils::mix;
-
-pub mod kinds {
+{{#include ../examples/ch14-more-about-cargo/listing-14-05/src/lib.rs:1:9}}
     // --snip--
-}
-
-pub mod utils {
+{{#include ../examples/ch14-more-about-cargo/listing-14-05/src/lib.rs:23:25}}
     // --snip--
-}
+{{#include ../examples/ch14-more-about-cargo/listing-14-05/src/lib.rs:33}}
 ```
 
 <span class="caption">Listing 14-5: Adding `pub use` statements to re-export
@@ -312,12 +251,9 @@ structure in Listing 14-5, as shown in Listing 14-6:
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust,ignore
-use art::PrimaryColor;
-use art::mix;
-
-fn main() {
+{{#include ../examples/ch14-more-about-cargo/listing-14-06/src/main.rs:1:4}}
     // --snip--
-}
+{{#include ../examples/ch14-more-about-cargo/listing-14-06/src/main.rs:8}}
 ```
 
 <span class="caption">Listing 14-6: A program using the re-exported items from

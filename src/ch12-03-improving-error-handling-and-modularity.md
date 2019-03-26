@@ -75,20 +75,10 @@ function `parse_config`, which we’ll define in *src/main.rs* for the moment.
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust,ignore
-fn main() {
-    let args: Vec<String> = env::args().collect();
-
-    let (query, filename) = parse_config(&args);
+{{#include ../examples/ch12-an-io-project/listing-12-05/src/main.rs:4:7}}
 
     // --snip--
-}
-
-fn parse_config(args: &[String]) -> (&str, &str) {
-    let query = &args[1];
-    let filename = &args[2];
-
-    (query, filename)
-}
+{{#include ../examples/ch12-an-io-project/listing-12-05/src/main.rs:16:23}}
 ```
 
 <span class="caption">Listing 12-5: Extracting a `parse_config` function from
@@ -133,34 +123,10 @@ Listing 12-6 shows the improvements to the `parse_config` function.
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust,should_panic
-# use std::env;
-# use std::fs;
-#
-fn main() {
-    let args: Vec<String> = env::args().collect();
-
-    let config = parse_config(&args);
-
-    println!("Searching for {}", config.query);
-    println!("In file {}", config.filename);
-
-    let contents = fs::read_to_string(config.filename)
-        .expect("Something went wrong reading the file");
+{{#include ../examples/ch12-an-io-project/listing-12-06/src/main.rs:4:13}}
 
     // --snip--
-}
-
-struct Config {
-    query: String,
-    filename: String,
-}
-
-fn parse_config(args: &[String]) -> Config {
-    let query = args[1].clone();
-    let filename = args[2].clone();
-
-    Config { query, filename }
-}
+{{#include ../examples/ch12-an-io-project/listing-12-06/src/main.rs:16:28}}
 ```
 
 <span class="caption">Listing 12-6: Refactoring `parse_config` to return an
@@ -227,31 +193,14 @@ shows the changes we need to make.
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust,should_panic
-# use std::env;
-#
-fn main() {
-    let args: Vec<String> = env::args().collect();
-
-    let config = Config::new(&args);
+{{#include ../examples/ch12-an-io-project/listing-12-07/src/main.rs:4:7}}
 
     // --snip--
-}
+{{#include ../examples/ch12-an-io-project/listing-12-07/src/main.rs:16}}
 
-# struct Config {
-#     query: String,
-#     filename: String,
-# }
-#
 // --snip--
 
-impl Config {
-    fn new(args: &[String]) -> Config {
-        let query = args[1].clone();
-        let filename = args[2].clone();
-
-        Config { query, filename }
-    }
-}
+{{#include ../examples/ch12-an-io-project/listing-12-07/src/main.rs:23:30}}
 ```
 
 <span class="caption">Listing 12-7: Changing `parse_config` into
@@ -294,10 +243,7 @@ out of bounds` message.
 
 ```rust,ignore
 // --snip--
-fn new(args: &[String]) -> Config {
-    if args.len() < 3 {
-        panic!("not enough arguments");
-    }
+{{#include ../examples/ch12-an-io-project/listing-12-08/src/main.rs:24:27}}
     // --snip--
 ```
 
@@ -349,18 +295,7 @@ next listing.
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust,ignore
-impl Config {
-    fn new(args: &[String]) -> Result<Config, &'static str> {
-        if args.len() < 3 {
-            return Err("not enough arguments");
-        }
-
-        let query = args[1].clone();
-        let filename = args[2].clone();
-
-        Ok(Config { query, filename })
-    }
-}
+{{#include ../examples/ch12-an-io-project/listing-12-09/src/main.rs:23:34}}
 ```
 
 <span class="caption">Listing 12-9: Returning a `Result` from
@@ -393,15 +328,7 @@ program that the program exited with an error state.
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust,ignore
-use std::process;
-
-fn main() {
-    let args: Vec<String> = env::args().collect();
-
-    let config = Config::new(&args).unwrap_or_else(|err| {
-        println!("Problem parsing arguments: {}", err);
-        process::exit(1);
-    });
+{{#include ../examples/ch12-an-io-project/listing-12-10/src/main.rs:3:11}}
 
     // --snip--
 ```
@@ -458,21 +385,10 @@ defining the function in *src/main.rs*.
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust,ignore
-fn main() {
+{{#include ../examples/ch12-an-io-project/listing-12-11/src/main.rs:5}}
     // --snip--
 
-    println!("Searching for {}", config.query);
-    println!("In file {}", config.filename);
-
-    run(config);
-}
-
-fn run(config: Config) {
-    let contents = fs::read_to_string(config.filename)
-        .expect("Something went wrong reading the file");
-
-    println!("With text:\n{}", contents);
-}
+{{#include ../examples/ch12-an-io-project/listing-12-11/src/main.rs:13:24}}
 
 // --snip--
 ```
@@ -497,17 +413,11 @@ signature and body of `run`.
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust,ignore
-use std::error::Error;
+{{#include ../examples/ch12-an-io-project/listing-12-12/src/main.rs:4}}
 
 // --snip--
 
-fn run(config: Config) -> Result<(), Box<dyn Error>> {
-    let contents = fs::read_to_string(config.filename)?;
-
-    println!("With text:\n{}", contents);
-
-    Ok(())
-}
+{{#include ../examples/ch12-an-io-project/listing-12-12/src/main.rs:20:26}}
 ```
 
 <span class="caption">Listing 12-12: Changing the `run` function to return
@@ -565,18 +475,10 @@ with `Config::new` in Listing 12-10, but with a slight difference:
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust,ignore
-fn main() {
+{{#include ../examples/ch12-an-io-project/no-listing-01-handling-errors-in-main/src/main.rs:6}}
     // --snip--
 
-    println!("Searching for {}", config.query);
-    println!("In file {}", config.filename);
-
-    if let Err(e) = run(config) {
-        println!("Application error: {}", e);
-
-        process::exit(1);
-    }
-}
+{{#include ../examples/ch12-an-io-project/no-listing-01-handling-errors-in-main/src/main.rs:14:22}}
 ```
 
 We use `if let` rather than `unwrap_or_else` to check whether `run` returns an
@@ -610,23 +512,11 @@ compile until we modify *src/main.rs* in Listing 12-14.
 <span class="filename">Filename: src/lib.rs</span>
 
 ```rust,ignore
-use std::error::Error;
-use std::fs;
-
-pub struct Config {
-    pub query: String,
-    pub filename: String,
-}
-
-impl Config {
-    pub fn new(args: &[String]) -> Result<Config, &'static str> {
+{{#include ../examples/ch12-an-io-project/listing-12-13/src/lib.rs:1:10}}
         // --snip--
-    }
-}
-
-pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
+{{#include ../examples/ch12-an-io-project/listing-12-13/src/lib.rs:19:22}}
     // --snip--
-}
+{{#include ../examples/ch12-an-io-project/listing-12-13/src/lib.rs:28}}
 ```
 
 <span class="caption">Listing 12-13: Moving `Config` and `run` into
@@ -642,17 +532,11 @@ binary crate in *src/main.rs*, as shown in Listing 12-14.
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust,ignore
-use std::env;
-use std::process;
-
-use minigrep::Config;
-
-fn main() {
+{{#include ../examples/ch12-an-io-project/listing-12-14/src/main.rs:1:6}}
     // --snip--
-    if let Err(e) = minigrep::run(config) {
+{{#include ../examples/ch12-an-io-project/listing-12-14/src/main.rs:17}}
         // --snip--
-    }
-}
+{{#include ../examples/ch12-an-io-project/listing-12-14/src/main.rs:21:22}}
 ```
 
 <span class="caption">Listing 12-14: Using the `minigrep` library crate in

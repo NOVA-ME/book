@@ -17,6 +17,8 @@ similar to that of closures, as shown in Listing 19-27.
 <span class="filename">Filename: src/main.rs</span>
 
 ```rust
+{{#include ../examples/ch19-advanced-features/no-listing-14-generic-maybe-sized/src/lib.rs:1}}
+
 fn add_one(x: i32) -> i32 {
     x + 1
 }
